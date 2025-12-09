@@ -11,9 +11,15 @@ const index = (req, res) => {
 };
 
 const show = (req, res) => {
-  const id = Number(req.params.id);
-  const post = posts.find((p) => p.id === id);
-  res.json(post);
+  const { id } = req.params;
+  const sql = "SELECT * FROM posts WHERE id = ?";
+
+  connection.query(sql, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Post not found" });
+    res.json(results[0]);
+  });
 };
 
 const store = (req, res) => {
