@@ -77,19 +77,13 @@ const update = (req, res) => {
 };
 
 const destroy = (req, res) => {
-  const id = Number(req.params.id);
-  const obiettivo = posts.find((post) => post.id === id);
+  const sql = "DELETE FROM posts WHERE id = ?";
+  const { id } = req.params;
 
-  if (!obiettivo) {
-    return res
-      .status(404)
-      .json({ error: true, message: "Obiettivo non trovato" });
-  }
-
-  posts.splice(posts.indexOf(obiettivo), 1);
-  console.log("Obiettivo rimosso. Nuova lista operativa: ", posts);
-
-  res.status(204).send();
+  connection.query(sql, [id], (err) => {
+    if (err) return res.status(500).json({ error: "Failed to delete post" });
+    res.sendStatus(204);
+  });
 };
 
 module.exports = {
